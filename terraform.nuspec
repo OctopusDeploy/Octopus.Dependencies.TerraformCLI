@@ -10,6 +10,6 @@
         </contentFiles>
     </metadata>
     <files>
-        <file src="target\terraform.exe" target="contentFiles/any/any" />
+        <file src="terraform.exe" target="contentFiles/any/any" />
     </files>
 </package>
