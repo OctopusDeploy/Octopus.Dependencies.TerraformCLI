@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata minClientVersion="3.3.0">
+        <id>Octopus.Dependencies.TerraformCLI</id>
+        <version>{{Version}}</version>
+        <description>Terraform CLI Package</description>
+        <authors>Matthew Casperson</authors>
+        <contentFiles>
+            <files include="**/terraform.exe" buildAction="None" copyToOutput="false" />
+        </contentFiles>
+    </metadata>
+    <files>
+        <file src="target\terraform.exe" target="contentFiles/any/any" />
+    </files>
+</package>
