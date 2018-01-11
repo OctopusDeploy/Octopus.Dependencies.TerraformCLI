@@ -2,18 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.3.0">
         <id>Octopus.Dependencies.TerraformCLI</id>
-        <version>0.11.2.2</version>
+        <version>0.11.2.3</version>
         <description>Terraform CLI Package</description>
         <authors>Matthew Casperson</authors>
         <contentFiles>
             <files include="**/terraform.exe" buildAction="None" copyToOutput="false" />
-            <files include="**/plugins/windows_386/*.exe" buildAction="None" copyToOutput="false" />
-			<files include="**/plugins/windows_386/lock.json" buildAction="None" copyToOutput="false" />
+            <files include="**/plugins/*.exe" buildAction="None" copyToOutput="false" />
         </contentFiles>
     </metadata>
     <files>
         <file src="terraform.exe" target="contentFiles/any/any" />
-		<file src="plugins/windows_386/terraform-provider-aws_v1.6.0_x4.exe" target="contentFiles/any/any/plugins/windows_386" />
-		<file src="plugins/windows_386/lock.json" target="contentFiles/any/any/plugins/windows_386" />
+		<file src="plugins/terraform-provider-aws_v1.6.0_x4.exe" target="contentFiles/any/any/plugins" />
     </files>
 </package>
