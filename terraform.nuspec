@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.3.0">
         <id>Octopus.Dependencies.TerraformCLI</id>
-        <version>0.11.2.3</version>
+        <version>0.11.2.4</version>
         <description>Terraform CLI Package</description>
         <authors>Matthew Casperson</authors>
         <contentFiles>
