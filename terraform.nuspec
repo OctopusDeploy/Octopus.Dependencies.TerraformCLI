@@ -6,8 +6,7 @@
         <description>Terraform CLI Package</description>
         <authors>Matthew Casperson</authors>
         <contentFiles>
-            <files include="**/terraform.exe" buildAction="None" copyToOutput="false" />
-            <files include="**/plugins/*.exe" buildAction="None" copyToOutput="false" />
+            <files include="contentFiles/any/**" buildAction="None" copyToOutput="false" />
         </contentFiles>
     </metadata>
     <files>
