@@ -8,12 +8,10 @@
         <contentFiles>
             <files include="**/terraform.exe" buildAction="None" copyToOutput="false" />
             <files include="**/plugins/*.exe" buildAction="None" copyToOutput="false" />
-			<files include="**/plugins/windows_386/lock.json" buildAction="None" copyToOutput="false" />
         </contentFiles>
     </metadata>
     <files>
         <file src="terraform.exe" target="contentFiles/any/any" />
-		<file src="plugins/windows_386/terraform-provider-aws_v1.6.0_x4.exe" target="contentFiles/any/any/plugins/windows_386" />
-		<file src="plugins/windows_386/lock.json" target="contentFiles/any/any/plugins/windows_386" />
+		<file src="plugins/windows_386/**" target="contentFiles/any/any/plugins/windows_386" />
     </files>
 </package>
