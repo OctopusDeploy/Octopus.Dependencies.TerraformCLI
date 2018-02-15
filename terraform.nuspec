@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.3.0">
         <id>Octopus.Dependencies.TerraformCLI</id>
-        <version>0.11.3.2</version>
+        <version>0.11.3.3</version>
         <description>Terraform CLI Package</description>
         <authors>Matthew Casperson</authors>
         <contentFiles>
@@ -12,6 +12,6 @@
     <files>
         <!-- https://docs.microsoft.com/en-us/nuget/reference/nuspec#package-folder-structure -->
         <file src="terraform.exe" target="contentFiles/any/win" />
-		<file src="plugins/windows_386/**" target="contentFiles/any/win/plugins/windows_386" />
+		<file src="plugins/windows_386/**" target="contentFiles/any/win" />
     </files>
 </package>
