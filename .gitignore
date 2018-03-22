@@ -1,2 +1,4 @@
 *.nupkg
 .idea
+*.zip
+terraform-processed.nuspec
