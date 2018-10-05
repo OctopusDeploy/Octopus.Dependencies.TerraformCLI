@@ -20,7 +20,7 @@ Unzip "$cwd\terraform_$($version.current_version)_windows_386.zip" "$cwd"
 
 # download latest version of supported plugins
 # this is a list of the names of the support plugins
-$plugins = @( "terraform-provider-azurerm", "terraform-provider-aws", "terraform-provider-azure", "serf");
+$plugins = @( "terraform-provider-azurerm", "terraform-provider-aws", "terraform-provider-azure");
 
 $allVersions = [System.Net.WebClient]::new().DownloadString("https://releases.hashicorp.com/index.json") | ConvertFrom-Json
 
