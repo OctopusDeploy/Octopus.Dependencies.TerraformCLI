@@ -61,7 +61,7 @@ Task("Publish")
     .Does(() =>
 {
     NuGetPush($"{artifactsDir}/Octopus.Dependencies.TerraformCLI.{nugetVersion}.nupkg", new NuGetPushSettings {
-        Source = EnvironmentVariable("InternalNuget.OctopusDependeciesFeedUrl"),
+        Source = EnvironmentVariable("OctopusDependeciesFeedUrl"),
         ApiKey = EnvironmentVariable("FeedzIoApiKey")
     });
 });
