@@ -8,6 +8,7 @@ using Path = System.IO.Path;
 using IO = System.IO;
 using Cake.Common.Tools;
 using Cake.Incubator;
+using System.Linq;
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -47,11 +48,20 @@ Task("GetVersion")
 Task("Pack")
     .Does(() => 
 {
+    var terraformProcess = StartAndReturnProcess("terraform", new ProcessSettings { Arguments = "--version", RedirectStandardOutput = true });
+    
+    var terraformVersion = terraformProcess.GetStandardOutput().First().Trim();
+    Information(terraformVersion);
+
+    var plugins = string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles(@".\plugins\windows_386").Select(x => new FileInfo(x)).Select(x=>x.Name)).Trim();
+
     Information($"Building Octopus.Dependencies.TerraformCLI v{nugetVersion}");
+    
     NuGetPack("terraform.nuspec", new NuGetPackSettings {
         BasePath = ".",
         OutputDirectory = artifactsDir,
-        Version = nugetVersion
+        Version = nugetVersion,
+        Properties = new Dictionary<string, string> { { "terraformVersion", terraformVersion }, { "plugins", plugins }}
     });
 });
 

@@ -3,7 +3,15 @@
     <metadata minClientVersion="3.3.0">
         <id>Octopus.Dependencies.TerraformCLI</id>
         <version>$version$</version>
-        <description>Terraform CLI Package</description>
+        <description>
+        Terraform CLI Package
+
+        $terraformVersion$
+        
+        Plugins:
+        
+        $plugins$
+        </description>
         <authors>Matthew Casperson</authors>
         <contentFiles>
             <files include="contentFiles/any/**" buildAction="None" copyToOutput="false" />
