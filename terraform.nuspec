@@ -12,7 +12,9 @@
         
         $plugins$
         </description>
-        <authors>Matthew Casperson</authors>
+        <authors>Octopus Deploy</authors>
+        <licenseUrl>https://github.com/OctopusDeploy/Octopus.Dependencies.TerraformCLI/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/OctopusDeploy/Octopus.Dependencies.TerraformCLI</projectUrl>
         <contentFiles>
             <files include="contentFiles/any/**" buildAction="None" copyToOutput="false" />
         </contentFiles>
