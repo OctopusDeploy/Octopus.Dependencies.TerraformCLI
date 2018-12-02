@@ -1,0 +1,23 @@
+[
+    {
+        "name": "terraform-provider-azurerm",
+        "versions": [
+            "1.13.0",
+            "1.16.0",
+            "1.17.0"
+        ]
+    },
+    {
+        "name": "terraform-provider-aws",
+        "versions": [
+            "1.14.0",
+            "1.39.0"
+        ]
+    },
+    {
+        "name": "terraform-provider-azure",
+        "versions": [
+            "0.1.1"
+        ]
+    }
+]
