@@ -2,7 +2,11 @@
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+
 #addin "nuget:?package=Cake.Incubator"
+#addin "nuget:?package=Cake.Http"
+#addin "nuget:?package=Cake.Json"
+#addin nuget:?package=Newtonsoft.Json&version=9.0.1
 
 using Path = System.IO.Path;
 using IO = System.IO;
@@ -21,18 +25,31 @@ var package = Argument("package", string.Empty);
 // GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////////////
 var localPackagesDir = "../LocalPackages";
-var artifactsDir = @".\artifacts";
+var artifactsDir = @"./artifacts";
 var nugetVersion = string.Empty;
-GitVersion gitVersionInfo;
+var buildDir = @"./build";
+
+string terraformVersion = "0.0.0";
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-Task("GetVersion")
-    .Does(() => 
+Task("Clean")
+    .Does(() =>
 {
-    gitVersionInfo = GitVersion(new GitVersionSettings {
+    CleanDirectory(buildDir);
+    CleanDirectory(artifactsDir);
+    if (FileExists("./terraform.temp.nuspec"))
+    {
+        DeleteFile("./terraform.temp.nuspec");
+    }
+});
+
+Task("GetVersion")
+    .Does(() =>
+{
+    var gitVersionInfo = GitVersion(new GitVersionSettings {
         OutputType = GitVersionOutput.Json
     });
     nugetVersion = gitVersionInfo.NuGetVersion;
@@ -45,24 +62,76 @@ Task("GetVersion")
     Verbose("GitVersion:\n{0}", gitVersionInfo.Dump());
 });
 
-Task("Pack")
-    .Does(() => 
+Task("Download")
+    .Does(() =>
 {
-    var terraformProcess = StartAndReturnProcess("terraform", new ProcessSettings { Arguments = "--version", RedirectStandardOutput = true });
-    
-    var terraformVersion = terraformProcess.GetStandardOutput().First().Trim();
-    Information(terraformVersion);
+    void retrieveAndUnzip(string url, string outputPath, string destination)
+    {
+        CreateDirectory(destination);
+        Information($"Downloading {url}");
+        DownloadFile(url, outputPath);
+        Unzip(outputPath, destination);
+    }
 
-    var plugins = string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles(@".\plugins\windows_386").Select(x => new FileInfo(x)).Select(x=>x.Name)).Trim();
+    System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-    Information($"Building Octopus.Dependencies.TerraformCLI v{nugetVersion}");
-    
-    NuGetPack("terraform.nuspec", new NuGetPackSettings {
-        BasePath = ".",
-        OutputDirectory = artifactsDir,
-        Version = nugetVersion,
-        Properties = new Dictionary<string, string> { { "terraformVersion", terraformVersion }, { "plugins", plugins }}
-    });
+    var jsonVersion = HttpGet("https://checkpoint-api.hashicorp.com/v1/check/terraform");
+    var jObject = ParseJson(jsonVersion);
+    terraformVersion = jObject["current_version"].Value<string>();
+
+    var pluginVersions = HttpGet("https://releases.hashicorp.com/index.json");
+    jObject = ParseJson(pluginVersions);
+
+    foreach (var plat in new[] {"windows_386", "linux_386"})
+    {
+        var outputPath = File($"{buildDir}/terraform_{terraformVersion}_{plat}.zip");
+        var url = $"https://releases.hashicorp.com/terraform/{terraformVersion}/terraform_{terraformVersion}_{plat}.zip";
+
+        retrieveAndUnzip(url, outputPath, $"{buildDir}/{plat}");
+
+        foreach (var pluginName in new[] {"terraform-provider-azurerm", "terraform-provider-aws", "terraform-provider-azure"})
+        {
+            var plugin = jObject[pluginName];
+            var latestVersion = new Version(0, 0, 0);
+            JToken latestToken = null;
+
+            foreach (var jToken in plugin["versions"])
+            {
+                var version = (JProperty) jToken;
+                var currentVersion = new Version(version.Name);
+                if (currentVersion > latestVersion)
+                {
+                    latestVersion = currentVersion;
+                    latestToken = version.Value;
+                }
+            }
+
+            var item = latestToken["builds"].First(token => $"{token["os"].Value<string>()}_{token["arch"].Value<string>()}" == plat);
+            url = item["url"].Value<string>();
+            outputPath = File($"{buildDir}/{item["filename"].Value<string>()}");
+
+            retrieveAndUnzip(url, outputPath, $"{buildDir}/{plat}/plugins/{plat}");
+        }
+    }
+});
+
+Task("Pack")
+    .Does(() =>
+{
+    foreach (var plat in new[] {"windows_386", "linux_386"})
+    {
+        var plugins = string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles($"{buildDir}/{plat}/plugins/{plat}").Select(x => new FileInfo(x)).Select(x=>x.Name)).Trim();
+
+        Information($"Building Octopus.Dependencies.TerraformCLI v{nugetVersion}");
+
+        NuGetPack("terraform.nuspec", new NuGetPackSettings {
+            BasePath = $"{buildDir}/{plat}",
+            OutputDirectory = artifactsDir,
+            Id = $"Octopus.Dependencies.TerraformCLI.{plat}",
+            Version = nugetVersion,
+            Properties = new Dictionary<string, string> { { "terraformVersion", terraformVersion }, { "plugins", plugins }}
+        });
+    }
 });
 
 Task("Publish")
@@ -70,7 +139,9 @@ Task("Publish")
     .IsDependentOn("Pack")
     .Does(() =>
 {
-    NuGetPush($"{artifactsDir}/Octopus.Dependencies.TerraformCLI.{nugetVersion}.nupkg", new NuGetPushSettings {
+    var packages = GetFiles($"{artifactsDir}/Octopus.Dependencies.TerraformCLI.*.nupkg");
+
+    NuGetPush(packages, new NuGetPushSettings {
         Source = EnvironmentVariable("OctopusDependeciesFeedUrl"),
         ApiKey = EnvironmentVariable("FeedzIoApiKey")
     });
@@ -82,12 +153,13 @@ Task("CopyToLocalPackages")
     .Does(() =>
 {
     CreateDirectory(localPackagesDir);
-    CopyFileToDirectory(Path.Combine(artifactsDir, $"Octopus.Dependencies.TerraformCLI.{nugetVersion}.nupkg"), localPackagesDir);
+    CopyFiles($"{artifactsDir}/Octopus.Dependencies.TerraformCLI.*.nupkg", localPackagesDir);
 });
 
-
 Task("FullChain")
+    .IsDependentOn("Clean")
     .IsDependentOn("GetVersion")
+    .IsDependentOn("Download")
     .IsDependentOn("Pack")
     .IsDependentOn("Publish")
     .IsDependentOn("CopyToLocalPackages");
