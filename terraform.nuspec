@@ -7,9 +7,9 @@
         Terraform CLI Package
 
         $terraformVersion$
-        
+
         Plugins:
-        
+
         $plugins$
         </description>
         <authors>Octopus Deploy, Hashicorp</authors>
@@ -22,7 +22,6 @@
     </metadata>
     <files>
         <!-- https://docs.microsoft.com/en-us/nuget/reference/nuspec#package-folder-structure -->
-        <file src="terraform.exe" target="contentFiles/any/win" />
-		<file src="plugins/windows_386/**" target="contentFiles/any/win" />
+        <file src="**/*" target="contentFiles/any/any" />
     </files>
 </package>

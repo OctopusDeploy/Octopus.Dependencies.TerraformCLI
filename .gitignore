@@ -1,10 +1,5 @@
-*.nupkg
-.idea
-*.zip
-terraform-processed.nuspec
-/tools/Addins/
-/tools/Cake/
-/tools/GitVersion.CommandLine
-/tools/ILRepack
 /tools/*
-!/tools/packages.config
+/artifacts/
+/publish/
+/build/
+*.temp.nuspec
