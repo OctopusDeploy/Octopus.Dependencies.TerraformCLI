@@ -82,7 +82,7 @@ Task("Download")
     var pluginVersions = HttpGet("https://releases.hashicorp.com/index.json");
     jObject = ParseJson(pluginVersions);
 
-    foreach (var plat in new[] {"windows_386", "linux_386"})
+    foreach (var plat in new[] {"windows_386"})
     {
         var outputPath = File($"{buildDir}/terraform_{terraformVersion}_{plat}.zip");
         var url = $"https://releases.hashicorp.com/terraform/{terraformVersion}/terraform_{terraformVersion}_{plat}.zip";
@@ -118,7 +118,7 @@ Task("Download")
 Task("Pack")
     .Does(() =>
 {
-    foreach (var plat in new[] {"windows_386", "linux_386"})
+    foreach (var plat in new[] {"windows_386"})
     {
         var plugins = string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles($"{buildDir}/{plat}/plugins/{plat}").Select(x => new FileInfo(x)).Select(x=>x.Name)).Trim();
 
@@ -127,7 +127,7 @@ Task("Pack")
         NuGetPack("terraform.nuspec", new NuGetPackSettings {
             BasePath = $"{buildDir}/{plat}",
             OutputDirectory = artifactsDir,
-            Id = $"Octopus.Dependencies.TerraformCLI.{plat}",
+            Id = $"Octopus.Dependencies.TerraformCLI",
             Version = nugetVersion,
             Properties = new Dictionary<string, string> { { "terraformVersion", terraformVersion }, { "plugins", plugins }}
         });
