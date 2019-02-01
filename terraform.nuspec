@@ -12,8 +12,8 @@
 
         $plugins$
         </description>
-        <authors>Octopus Deploy, Hashicorp</authors>
-        <owners>Octopus Deploy, Hashicorp</owners>
+        <authors>Octopus Deploy</authors>
+        <owners>Octopus Deploy</owners>
         <licenseUrl>https://github.com/OctopusDeploy/Octopus.Dependencies.TerraformCLI/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/OctopusDeploy/Octopus.Dependencies.TerraformCLI</projectUrl>
         <contentFiles>
