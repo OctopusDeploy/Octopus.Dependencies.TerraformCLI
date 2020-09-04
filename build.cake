@@ -29,7 +29,7 @@ var artifactsDir = @"./artifacts";
 var nugetVersion = string.Empty;
 var buildDir = @"./build";
 
-string terraformVersion = "0.0.0";
+string terraformVersion = "0.11.8";
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
@@ -75,12 +75,8 @@ Task("Download")
 
     System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-    var jsonVersion = HttpGet("https://checkpoint-api.hashicorp.com/v1/check/terraform");
-    var jObject = ParseJson(jsonVersion);
-    terraformVersion = jObject["current_version"].Value<string>();
-
     var pluginVersions = HttpGet("https://releases.hashicorp.com/index.json");
-    jObject = ParseJson(pluginVersions);
+    var jObject = ParseJson(pluginVersions);
 
     foreach (var plat in new[] {"windows_386"})
     {
