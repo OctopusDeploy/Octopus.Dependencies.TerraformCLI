@@ -5,8 +5,8 @@
 
 #addin "nuget:?package=Cake.Incubator"
 #addin "nuget:?package=Cake.Http"
-#addin "nuget:?package=Cake.Json"
-#addin nuget:?package=Newtonsoft.Json&version=9.0.1
+#addin nuget:?package=Cake.Json
+#addin nuget:?package=Newtonsoft.Json&version=12.0.2
 
 using Path = System.IO.Path;
 using IO = System.IO;
