@@ -30,6 +30,9 @@ var nugetVersion = string.Empty;
 var buildDir = @"./build";
 
 string terraformVersion = "0.11.8";
+string awsPluginVersion = "1.39.0";
+string azurePluginVersion = "0.1.1";
+string azureRmPluginVersion = "1.17.0";
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
@@ -75,39 +78,30 @@ Task("Download")
 
     System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-    var pluginVersions = HttpGet("https://releases.hashicorp.com/index.json");
-    var jObject = ParseJson(pluginVersions);
-
     foreach (var plat in new[] {"windows_386"})
     {
-        var outputPath = File($"{buildDir}/terraform_{terraformVersion}_{plat}.zip");
-        var url = $"https://releases.hashicorp.com/terraform/{terraformVersion}/terraform_{terraformVersion}_{plat}.zip";
+        var cliDir = $"{buildDir}/{plat}";
+        var pluginDir = $"{cliDir}/plugins/{plat}";
 
-        retrieveAndUnzip(url, outputPath, $"{buildDir}/{plat}");
+        retrieveAndUnzip(
+            $"https://releases.hashicorp.com/terraform/{terraformVersion}/terraform_{terraformVersion}_{plat}.zip", 
+            File($"{buildDir}/terraform_{terraformVersion}_{plat}.zip"), 
+            cliDir);
 
-        foreach (var pluginName in new[] {"terraform-provider-azurerm", "terraform-provider-aws", "terraform-provider-azure"})
-        {
-            var plugin = jObject[pluginName];
-            var latestVersion = new Version(0, 0, 0);
-            JToken latestToken = null;
+        retrieveAndUnzip(
+            $"https://releases.hashicorp.com/terraform-provider-aws/{awsPluginVersion}/terraform-provider-aws_{awsPluginVersion}_{plat}.zip", 
+            File($"{buildDir}/terraform-provider-aws_{awsPluginVersion}_{plat}.zip"), 
+            pluginDir);
 
-            foreach (var jToken in plugin["versions"])
-            {
-                var version = (JProperty) jToken;
-                var currentVersion = new Version(version.Name);
-                if (currentVersion > latestVersion)
-                {
-                    latestVersion = currentVersion;
-                    latestToken = version.Value;
-                }
-            }
+        retrieveAndUnzip(
+            $"https://releases.hashicorp.com/terraform-provider-azure/{azurePluginVersion}/terraform-provider-azure_{azurePluginVersion}_{plat}.zip", 
+            File($"{buildDir}/terraform-provider-azure_{azurePluginVersion}_{plat}.zip"), 
+            pluginDir);
 
-            var item = latestToken["builds"].First(token => $"{token["os"].Value<string>()}_{token["arch"].Value<string>()}" == plat);
-            url = item["url"].Value<string>();
-            outputPath = File($"{buildDir}/{item["filename"].Value<string>()}");
-
-            retrieveAndUnzip(url, outputPath, $"{buildDir}/{plat}/plugins/{plat}");
-        }
+        retrieveAndUnzip(
+            $"https://releases.hashicorp.com/terraform-provider-azurerm/{azureRmPluginVersion}/terraform-provider-azurerm_{azureRmPluginVersion}_{plat}.zip", 
+            File($"{buildDir}/terraform-provider-azurerm_{azureRmPluginVersion}_{plat}.zip"), 
+            pluginDir);
     }
 });
 
