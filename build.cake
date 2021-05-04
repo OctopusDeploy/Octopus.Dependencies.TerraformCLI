@@ -29,7 +29,7 @@ var artifactsDir = @"./artifacts";
 var nugetVersion = string.Empty;
 var buildDir = @"./build";
 
-string terraformVersion = "0.11.8";
+string terraformVersion = "0.11.15";
 string awsPluginVersion = "1.39.0";
 string azurePluginVersion = "0.1.1";
 string azureRmPluginVersion = "1.17.0";
