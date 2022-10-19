@@ -3,10 +3,10 @@
 //////////////////////////////////////////////////////////////////////
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
-#addin "nuget:?package=Cake.Incubator"
-#addin "nuget:?package=Cake.Http"
-#addin nuget:?package=Cake.Json
-#addin nuget:?package=Newtonsoft.Json&version=12.0.2
+#addin nuget:?package=Cake.Incubator&version=6.0.0
+#addin nuget:?package=Cake.Http&version=1.3.0
+#addin nuget:?package=Cake.Json&version=6.0.1
+#addin nuget:?package=Newtonsoft.Json&version=13.0.1
 
 using Path = System.IO.Path;
 using IO = System.IO;
